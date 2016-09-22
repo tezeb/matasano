@@ -1,27 +1,19 @@
 #include <cstdio>
 #include "utils.h"
 #include <string>
+#include "xorer.h"
 
 using namespace std;
 
-namespace {
-	string xorer(const string& msg, const string& key) {
-		string ret;
-    auto i = key.begin();
-    for(auto j = msg.begin(); j != msg.end(); j++) {
-      ret.append(1, *j^*i);
-      i++;
-      if(i == key.end())
-          i = key.begin();
-    }
-		return ret;
-	}
-}
-
 void run(string& t1, string& t2, string exp) {	
-	string res = xorer(t1, t2);
+  xorer x(t2);
+  string res = (x<<t1)();
   string hres = hexlify(res);
   printf("%s\n:%s:\n:%s:\n", hres==exp?"MATCH":"FAILED", hres.c_str(), exp.c_str());
+  x.reset();
+  x<<res;
+  hres=x();
+  printf("%s\n:%s:\n:%s:\n", hres==t1?"MATCH":"FAILED", hres.c_str(), t1.c_str());
 }
 
 int main() {
