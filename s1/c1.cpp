@@ -25,7 +25,9 @@ namespace {
 	}
 
 	inline int appendFromBuff(int buff, int byte) {
-
+    buff = buff;
+    byte = byte;
+    return 0;
 	}
 
 }
