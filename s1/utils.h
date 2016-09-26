@@ -2,6 +2,7 @@
 #define _UTILS_H_
 
 #include <string>
+#include <unistd.h>
 
 int getHexValue(const char a) {
   if(a >= '0' && a <= '9')
@@ -47,6 +48,32 @@ std::string unhexlify(const std::string& a) {
       ret[n] = h2c(a[i], a[i+1]);
   }
   return ret;
+}
+
+int editDist(unsigned char a, unsigned char b) {
+  char c = a ^ b;
+  int ret = 0;
+  while(c) {
+    ret++;
+    c &= c-1;
+  }
+  return ret;
+}
+
+int editDist(const char* a, const char* b) {
+  int ret = 0;
+  while(*a && *b) {
+    ret+=editDist(*a, *b);
+    a++;
+    b++;
+  }
+  if(*a != *b)
+      return -1;
+  return ret;
+}
+
+int editDist(std::string& a, std::string& b) {
+  return editDist(a.c_str(), b.c_str());
 }
 
 #endif // _UTILS_H_
