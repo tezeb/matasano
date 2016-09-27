@@ -1,20 +1,28 @@
 CXX=g++
 CXXFLAGS=--std=c++11 -Wall -Wextra -Werror -pedantic -pedantic-errors -Wshadow
 
-TARGETS=1 2 3 4 5 6 7
+SRC := $(sort $(wildcard c?.cpp))
+OBJ := $(addsuffix .o,$(basename $(SRC)))
+EXE := $(SRC:c%.cpp=chal%)
+
+COMMON := utils.cpp
+COMMON_OBJ := $(addsuffix .o,$(basename $(COMMON)))
 
 .SECONDARY: $(addprefix chal,$(TARGETS))
 
-all:
+all: $(EXE)
 
-chal%: c%.o
-	$(CXX) -o $@ $<
+run: $(EXE:chal%=run%)
 
-c%: chal%
+chal%: c%.o $(COMMON_OBJ)
+	$(CXX) -o $@ $^
+
+run%: chal%
+	@echo -e "----- Running $^ -----"
 	@./$^
 
 p%: c%.py
 	@./$^
 
 clean:
-	rm -f chal? c?.o
+	rm -f $(EXE) $(OBJ) $(COMMON_OBJ)

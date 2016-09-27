@@ -13,7 +13,10 @@ class xorer {
           m_iter = m_key.begin();
   }
 public:
-  xorer(std::string key) : m_key(key) {
+  xorer(std::string key="") : m_key(key) {
+    m_iter = m_key.begin();
+  }
+  xorer(char key) : m_key(1, key) {
     m_iter = m_key.begin();
   }
   xorer& operator<<(const std::string& in) {
@@ -31,15 +34,20 @@ public:
     }
     return *this;
   }
-  std::string operator()() {
+  std::string get() {
     return m_buffer;
   }
   void reset() {
     m_buffer.clear();
     m_iter = m_key.begin();
   }
-  void setKey(std::string key) {
+  xorer& setKey(std::string key) {
     m_key = key;
+    m_iter = m_key.begin();
+    return *this;
+  }
+  xorer& setKey(char key) {
+    return setKey(std::string(1, key));
   }
 };
 

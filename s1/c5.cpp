@@ -7,12 +7,12 @@ using namespace std;
 
 void run(string& t1, string& t2, string exp) {	
   xorer x(t2);
-  string res = (x<<t1)();
+  string res = (x<<t1).get();
   string hres = hexlify(res);
   printf("%s\n:%s:\n:%s:\n", hres==exp?"MATCH":"FAILED", hres.c_str(), exp.c_str());
   x.reset();
   x<<res;
-  hres=x();
+  hres=x.get();
   printf("%s\n:%s:\n:%s:\n", hres==t1?"MATCH":"FAILED", hres.c_str(), t1.c_str());
 }
 
