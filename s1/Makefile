@@ -8,6 +8,8 @@ EXE := $(SRC:c%.cpp=chal%)
 COMMON := utils.cpp
 COMMON_OBJ := $(addsuffix .o,$(basename $(COMMON)))
 
+chal7: LIBS = -lcrypto
+
 .SECONDARY: $(addprefix chal,$(TARGETS))
 
 all: $(EXE)
@@ -15,7 +17,7 @@ all: $(EXE)
 run: $(EXE:chal%=run%)
 
 chal%: c%.o $(COMMON_OBJ)
-	$(CXX) -o $@ $^
+	$(CXX) $(LIBS) -o $@ $^
 
 run%: chal%
 	@echo -e "----- Running $^ -----"

@@ -1,6 +1,7 @@
 #include "utils.h"
 #include <map>
 #include <algorithm>
+#include <fstream>
 
 using namespace std;
 
@@ -14,8 +15,6 @@ namespace {
     '3', '4', '5', '6', '7', '8', '9', '+', '/'};
 
 }
-
-//	TODO: b64dec missing
 
 //	takes ptr to string and amount of bytes to convert
 //	len have to be even
@@ -39,6 +38,39 @@ string hex2b64(const string& in, size_t len) {
     for(int m = (n==1?10:18); m > 0; m-=6)
         ret.append(1, b64enc[buf>>m & 63]);
     ret.append(3-n, '=');
+  }
+  return ret;
+}
+
+char b64Index(char in) {
+  if(in >= 'A' && in <= 'Z')
+      return in-'A';
+  if(in >= 'a' && in <= 'z')
+      return in-'a'+26;
+  if(in >= '0' && in <= '9')
+      return in-'0'+52;
+  if(in == '+')
+      return 62;
+  if(in == '/')
+      return 63;
+  return -1;
+}
+
+string b64dec(const string& in) {
+  int buf = 0;
+  string ret;
+  //  TODO: add handling of unpadded b64
+  for(size_t i = 0; i < in.length(); i+=4) {
+    size_t j = i;
+    buf = b64Index(in[j++]);
+    int cnt = 4;
+    while(j < i+4 && in[j] != '=') {
+      buf <<= 6;
+      buf |= b64Index(in[j]);
+      ret.append(1, buf>>cnt & 0xFF);
+      cnt-=2;
+      j++;
+    }
   }
   return ret;
 }
@@ -99,20 +131,18 @@ int editDist(unsigned char a, unsigned char b) {
   return ret;
 }
 
-int editDist(const char* a, const char* b) {
-  int ret = 0;
-  while(*a && *b) {
-    ret+=editDist(*a, *b);
-    a++;
-    b++;
-  }
-  if(*a != *b)
-      return -1;
-  return ret;
-}
-
 int editDist(std::string& a, std::string& b) {
-  return editDist(a.c_str(), b.c_str());
+  if(a.length() != b.length()) 
+      return -1;
+  auto ai = a.begin();
+  auto bi = b.begin();
+  int ret = 0;
+  while(ai != a.end() && bi != b.end()) {
+    ret+=editDist(*ai, *bi);
+    ai++;
+    bi++;
+  }
+  return ret;
 }
 
 vector<pair<char,int>> frequencer(const string& a) {
@@ -145,3 +175,15 @@ int getEngScore(const string& in) {
   }
   return sum;
 }
+
+string readFile(string filename) {
+  ifstream file(filename);
+  string ret;
+  string tmp;
+  while(!getline(file, tmp).eof()) {
+    ret.append(tmp);
+  }
+  file.close();
+  return ret;
+}
+

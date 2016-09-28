@@ -10,6 +10,8 @@
 //  hex to base64 encode
 std::string hex2b64(const std::string& in, size_t len);
 
+std::string b64dec(const std::string& in);
+
 int getHexValue(const char a);
 
 //  converts number 0xab stored as 2 chars to one it's numerical representation
@@ -35,5 +37,6 @@ std::vector<std::pair<char,int>> frequencer(const std::string& a);
 //  function scores english text
 int getEngScore(const std::string& in);
 
+std::string readFile(std::string filename);
 
 #endif // _UTILS_H_
