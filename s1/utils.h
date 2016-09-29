@@ -7,8 +7,7 @@
 #include <string>
 #include <utility>
 
-//  hex to base64 encode
-std::string hex2b64(const std::string& in, size_t len);
+std::string b64enc(const std::string& in);
 
 std::string b64dec(const std::string& in);
 
@@ -38,5 +37,7 @@ std::vector<std::pair<char,int>> frequencer(const std::string& a);
 int getEngScore(const std::string& in);
 
 std::string readFile(std::string filename);
+
+std::string readBinFile(std::string filename);
 
 #endif // _UTILS_H_

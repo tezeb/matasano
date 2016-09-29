@@ -6,9 +6,18 @@
 
 using namespace std;
 
-void run(const string& t1, string& key) {	
+void loadAndDecrypt(const string &in, string& key) {
+  /* Load the human readable error strings for libcrypto */
+  ERR_load_crypto_strings();
+
+  /* Load all digest and cipher algorithms */
+  OpenSSL_add_all_algorithms();
+
+  /* Load config file, and other important initialisation */
+  OPENSSL_config(NULL);
+
   EVP_CIPHER_CTX *ctx;
-  int len = t1.length();
+  int len = in.length();
   int olen;
 
   unsigned char *out = new unsigned char[len+1];
@@ -26,7 +35,7 @@ void run(const string& t1, string& key) {
   }
 
   if(1 != EVP_DecryptUpdate(ctx, out, &olen,
-                            reinterpret_cast<const unsigned char*>(t1.c_str()),
+                            reinterpret_cast<const unsigned char*>(in.c_str()),
                             len)) {
      ERR_print_errors_fp(stderr);
      return;
@@ -49,22 +58,6 @@ void run(const string& t1, string& key) {
 
   free(out);
 
-}
-
-int main() {
-  /* Load the human readable error strings for libcrypto */
-  ERR_load_crypto_strings();
-
-  /* Load all digest and cipher algorithms */
-  OpenSSL_add_all_algorithms();
-
-  /* Load config file, and other important initialisation */
-  OPENSSL_config(NULL);
-
-  string key = "YELLOW SUBMARINE";
-
-  run(b64dec(readFile("7.txt")), key);
-
   /* Removes all digests and ciphers */
   EVP_cleanup();
 
@@ -74,5 +67,12 @@ int main() {
 
   /* Remove error strings */
   ERR_free_strings();
+}
+
+int main() {
+  string key = "YELLOW SUBMARINE";
+
+  loadAndDecrypt(b64dec(readFile("7.txt")), key);
+
   return 0;
 }

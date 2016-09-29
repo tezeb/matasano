@@ -4,7 +4,7 @@
 using namespace std;
 
 void run(string& t1, string& exp) {	
-	string ret = hex2b64(t1, t1.length());
+	string ret = b64enc(unhexlify(t1));
 	printf("%s\n:%s:\n:%s:\n", ret==exp?"MATCH":"FAILED", ret.c_str(), exp.c_str());
 }
 
@@ -14,13 +14,13 @@ void run1(string& t1, string& exp) {
 }
 
 void run2(string& t1) {
-  printf("%s\n", hex2b64(t1, 8).c_str());
-  printf("%s\n", hex2b64(t1, 6).c_str());
-  printf("%s\n", hex2b64(t1, 4).c_str());
-  printf("%s\n", hex2b64(t1, 2).c_str());
-  printf("%s\n", hex2b64(t1, sizeof(t1)/sizeof(char)-3).c_str());
-  printf("%s\n", hex2b64(t1, sizeof(t1)/sizeof(char)-5).c_str());
-  printf("%s\n", hex2b64(t1, sizeof(t1)/sizeof(char)-7).c_str());
+  printf("%s\n", b64enc(unhexlify(t1.substr(0, 8))).c_str());
+  printf("%s\n", b64enc(unhexlify(t1.substr(0, 6))).c_str());
+  printf("%s\n", b64enc(unhexlify(t1.substr(0, 4))).c_str());
+  printf("%s\n", b64enc(unhexlify(t1.substr(0, 2))).c_str());
+  printf("%s\n", b64enc(unhexlify(t1.substr(0, t1.length()-3))).c_str());
+  printf("%s\n", b64enc(unhexlify(t1.substr(0, t1.length()-5))).c_str());
+  printf("%s\n", b64enc(unhexlify(t1.substr(0, t1.length()-7))).c_str());
 }
 
 int main() {

@@ -7,7 +7,7 @@ using namespace std;
 
 namespace {
 
-  const char b64enc[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
+  const char b64enc_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
     'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
     'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
     'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
@@ -16,19 +16,17 @@ namespace {
 
 }
 
-//	takes ptr to string and amount of bytes to convert
-//	len have to be even
-string hex2b64(const string& in, size_t len) {
-  //	assert len % 2 == 0
+string b64enc(const string& in) {
   string ret;
   int buf = 0;
   int n = 0;
-  for(size_t i = 0; i < len; i+=2) {
-    buf |= h2c(in[i], in[i+1]);
+  for(size_t i = 0; i < in.length(); i++) {
+    buf |= (unsigned char)in[i];
     n++;
     if(n == 3) {
-      for(int m = 18; m >= 0; m-=6)
-          ret.append(1, b64enc[buf>>m & 63]);
+      for(int m = 18; m >= 0; m-=6) {
+          ret.append(1, b64enc_table[buf>>m & 63]);
+      }
       n = 0;
       buf = 0;
     }
@@ -36,7 +34,7 @@ string hex2b64(const string& in, size_t len) {
   }
   if(n > 0) {
     for(int m = (n==1?10:18); m > 0; m-=6)
-        ret.append(1, b64enc[buf>>m & 63]);
+        ret.append(1, b64enc_table[buf>>m & 63]);
     ret.append(3-n, '=');
   }
   return ret;
@@ -187,3 +185,17 @@ string readFile(string filename) {
   return ret;
 }
 
+string readBinFile(string filename) {
+  ifstream file(filename);
+  string ret;
+  string tmp;
+  char buf[1024];
+  while(!file.read(buf, 1024).eof()) {
+    ret.append(buf);
+  }
+  if(file.fail()) {
+    ret.append(buf, file.gcount());
+  }
+  file.close();
+  return ret;
+}
