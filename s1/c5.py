@@ -1,14 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import binascii
-
-def strxor(a, b):
-    #   assert len(b) > 0
-    c = (b*(len(a)//len(b)+1))[:len(a)]
-    return "".join([
-        chr(x ^ y) for(x, y) in zip(a, c)
-        ])
-
+from cryptoUtils import strxor
 
 if __name__ == '__main__':
     t1 = b"Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
@@ -19,3 +12,5 @@ if __name__ == '__main__':
     print(binascii.hexlify(bytes(res, "ascii")))
     if binascii.hexlify(bytes(res, "ascii")) == t3:
         print("MATCH")
+    else:
+        print("NO MATCH")
