@@ -7,3 +7,30 @@ def strxor(a, b):
     return "".join([
         chr(x ^ y) for(x, y) in zip(a, c)
         ])
+
+def bruteXor(res, predicate, *args):
+    ret = None
+    max_v = 0
+    dec = None
+    for x in range(0, 256):
+        t1 = strxor(res, str(chr(x)).encode('latin1'))
+        value = predicate(t1, *args)
+        if value > max_v:
+            ret = t1
+            max_v = value
+            dec = x
+    return (ret, dec, max_v)
+
+def strToBin(a):
+    abin=""
+    for v in a:
+        abin += bin(v)[2:].zfill(8)
+    return abin
+
+def editDist(a, b):
+    dist=0
+    for x, y in zip(strToBin(a), strToBin(b)):
+#        print(x, "=", y)
+        if x != y:
+            dist+=1
+    return dist
