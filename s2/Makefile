@@ -1,13 +1,14 @@
 CXX=g++
 CXXFLAGS=--std=c++11 -Wall -Wextra -Werror -pedantic -pedantic-errors -Wshadow
 
+CXXFLAGS+=-I../common
+
 SRC := $(sort $(wildcard c?.cpp))
 OBJ := $(addsuffix .o,$(basename $(SRC)))
 EXE := $(SRC:c%.cpp=chal%)
 
-#COMMON := utils.cpp
-#COMMON_OBJ := $(addsuffix .o,$(basename $(COMMON)))
-COMMON_OBJ := 
+COMMON := ../common/utils.cpp
+COMMON_OBJ := $(addsuffix .o,$(basename $(COMMON)))
 
 chal7: LIBS = -lcrypto
 chal8: LIBS = -lcrypto
@@ -29,4 +30,4 @@ p%: c%.py
 	@./$^
 
 clean:
-	rm -f c*.o chal* $(EXE) $(OBJ) $(COMMON_OBJ)
+	rm -f $(EXE) $(OBJ) $(COMMON_OBJ)
