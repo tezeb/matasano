@@ -100,7 +100,7 @@ char c2h(char a) {
 std::string hexlify(const std::string& a) {
   std::string ret(a.length()*2, 0);
   int i = 0;
-  for(const char& c : a) {
+  for(const unsigned char& c : a) {
       ret[i] = c2h(c/16);
  //     printf("%c[%x] %c\t", c, c, ret[i]);
       i++;
