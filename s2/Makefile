@@ -10,8 +10,7 @@ EXE := $(SRC:c%.cpp=chal%)
 COMMON := ../common/utils.cpp
 COMMON_OBJ := $(addsuffix .o,$(basename $(COMMON)))
 
-chal7: LIBS = -lcrypto
-chal8: LIBS = -lcrypto
+chal9: LIBS = -lcrypto
 
 .SECONDARY: $(addprefix chal,$(TARGETS))
 

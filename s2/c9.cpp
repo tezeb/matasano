@@ -25,21 +25,16 @@ void show_hex(string& in) {
 	printf("%02zu:\t%s\n", in.length(), out.c_str());
 }
 
-void pas20(string& in) {
-	pad(in, 20);
-	show_hex(in);
-}
-
 int main() {
 	string t1 = "YELLOW SUBMARINE";
 	string t2 = "YELLOW SUBMARIN";
 	string t3 = "YELLOW SUBMARI";
 	string t4 = "YELLOW SUBMAR";
 	string t5 = "YELLOW SUBMA";
-	pas20(t1);
-	pas20(t2);
-	pas20(t3);
-	pas20(t4);
-	pas20(t5);
+    for(int i = 10; i < 25; i++) {
+        string tmp(t1);
+        pad(tmp, i);
+        show_hex(tmp);
+    }
 	return 0;
 }

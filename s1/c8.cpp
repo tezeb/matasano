@@ -5,7 +5,6 @@
 #include <fstream>
 #include <string>
 #include "utils.h"
-#include "xor_utils.h"
 
 using namespace std;
 
