@@ -1,6 +1,3 @@
-#include <openssl/conf.h>
-#include <openssl/evp.h>
-#include <openssl/err.h>
 #include <cstdio>
 #include <fstream>
 #include <string>

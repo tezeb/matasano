@@ -1,8 +1,11 @@
 #include <openssl/conf.h>
-#include <openssl/evp.h>
 #include <openssl/err.h>
 #include <cstring>
 #include "aes128_ecb.h"
+
+#define log(...) {fprintf(stderr, "%20.20s:%03d\t", __func__, __LINE__); fprintf(stderr, __VA_ARGS__); putc('\n', stderr);}
+//	debug
+#include "utils.h"
 
 using namespace std;
 
@@ -34,107 +37,103 @@ namespace {
 
 }
 
-aes128_ecb::aes128_ecb(string key) : m_key(key), m_blen(128),
-									 m_out(new unsigned char[m_blen]),
-									 m_olen(0) {
-  if(!(ctx = EVP_CIPHER_CTX_new())) {
-     ERR_print_errors_fp(stderr);
-	 //	throw
-  }
-}
+void aes128_ecb::init(bool encrypt) {
+	m_outlen = 0;
+	m_encrypt = encrypt;
 
-void aes128_ecb::checkBuffer(int newlen) {
-	if(m_blen <= m_olen + newlen) { //	+ cipher_size
-		m_blen *= 2;
-		unsigned char *tmp = new unsigned char[m_blen];
-		memcpy(tmp, m_out, m_olen);
-		delete[] m_out;
-		m_out = tmp;
-	}
-}
-
-void aes128_ecb::e_init() {
-	if(1 != EVP_EncryptInit_ex(ctx, EVP_aes_128_ecb(), NULL,
-							   reinterpret_cast<const unsigned char*>(m_key.c_str()),
-							   NULL)) {
+	EVP_CIPHER_CTX_init(&m_ctx);
+	if(1 != EVP_CipherInit_ex(&m_ctx, EVP_aes_128_ecb(), NULL, NULL, NULL, m_encrypt)) {
 		ERR_print_errors_fp(stderr);
-		//	throw
+		EVP_CIPHER_CTX_cleanup(&m_ctx);
+		throw 13;
+	}
+	EVP_CIPHER_CTX_set_padding(&m_ctx, 0);
+
+	/* Now we can set key and IV */
+	if(1 != EVP_CipherInit_ex(&m_ctx, NULL, NULL,
+							  reinterpret_cast<const unsigned char*>(m_key.c_str()),
+							  NULL, -1)) {
+		ERR_print_errors_fp(stderr);
+		EVP_CIPHER_CTX_cleanup(&m_ctx);
+		throw 13;
 	}
 }
 
-void aes128_ecb::e_append(const string &in) {
-	int xlen;
+void aes128_ecb::append(const std::string &in) {
+	int tmp;
+
 	checkBuffer(in.length());
-	if(1 != EVP_EncryptUpdate(ctx, m_out+m_olen, &xlen,
-							  reinterpret_cast<const unsigned char*>(in.c_str()),
-							  in.length())) {
+
+	if(1 != EVP_CipherUpdate(&m_ctx, m_buff+m_outlen, &tmp,
+							 reinterpret_cast<const unsigned char*>(in.c_str()),
+							 in.length())) {
 		ERR_print_errors_fp(stderr);
-		//	throw
+		EVP_CIPHER_CTX_cleanup(&m_ctx);
+		throw 13;
 	}
-	m_olen += xlen;
+	m_outlen += tmp;
 }
 
-string aes128_ecb::e_finalize() {
+string aes128_ecb::finalize() {
 	int xlen;
-	if(1 != EVP_EncryptFinal_ex(ctx, m_out+m_olen, &xlen)) {
+
+	if(1 != EVP_CipherFinal_ex(&m_ctx, m_buff+m_outlen, &xlen)) {
 		ERR_print_errors_fp(stderr);
-		//	throw
+		EVP_CIPHER_CTX_cleanup(&m_ctx);
+		throw 13;
 	}
-	m_olen += xlen;
-	m_out[m_olen] = '\0';
-	string ret(reinterpret_cast<char*>(m_out));
-	delete[] m_out;
+	m_outlen += xlen;
+	m_buff[m_outlen] = '\0';
+
+	string ret = reinterpret_cast<const char*>(m_buff);
+
+	EVP_CIPHER_CTX_cleanup(&m_ctx);
+
+	m_outlen = 0;
 	return ret;
 }
 
-
-void aes128_ecb::d_init() {
-	if(1 != EVP_DecryptInit_ex(ctx, EVP_aes_128_ecb(), NULL,
-							   reinterpret_cast<const unsigned char*>(m_key.c_str()),
-							   NULL)) {
-		ERR_print_errors_fp(stderr);
-		//	throw
+void aes128_ecb::checkBuffer(size_t newlen) {
+	if(m_bufflen <= m_outlen + newlen) { //	+ cipher_size
+		while(m_bufflen <= m_outlen + newlen)
+			m_bufflen *= 2;
+		unsigned char *tmp = new unsigned char[m_bufflen];
+		memcpy(tmp, m_buff, m_outlen);
+		delete[] m_buff;
+		m_buff = tmp;
 	}
 }
 
-void aes128_ecb::d_append(const string &in) {
-	int xlen;
-	checkBuffer(in.length());
-	if(1 != EVP_DecryptUpdate(ctx, m_out+m_olen, &xlen,
-							  reinterpret_cast<const unsigned char*>(in.c_str()),
-							  in.length())) {
-		ERR_print_errors_fp(stderr);
-		//	throw
+#ifdef AES_STANDALONE
+
+void testCrypt(string in, string& key) {
+	aes128_ecb x(key);
+	x.init();
+	for(int i = 0; i < 100; i++)
+		x.append(in);
+	string ret = x.finalize();
+
+	for(int j = 0; j < 5; j++) {
+		x.init();
+		x.append(ret);
+		ret = x.finalize();
 	}
-	m_olen += xlen;
-}
-
-string aes128_ecb::d_finalize() {
-	int xlen;
-	if(1 != EVP_DecryptFinal_ex(ctx, m_out+m_olen, &xlen)) {
-		ERR_print_errors_fp(stderr);
-		// throw
+	for(int j = 0; j < 6; j++) {
+		x.init(false);
+		x.append(ret);
+		ret = x.finalize();
 	}
-	m_olen += xlen;
-	string ret(reinterpret_cast<char*>(m_out));
-	delete[] m_out;
-	return ret;
+	if (ret.length() != 100*in.length())
+		log("!!!!!!!!!!!!!!!! ERROR !!!!!!!!!!!!!!!!");
+
 }
-
-#ifdef _AES_STANDALONE_
-
-#include "utils.h"
 
 int main() {
 	string input("YELLOW SUBMARINE");
 	string pass("aaaaaaaaaaaaaaaa");
-	encryptor<aes128_ecb> e(pass);
-	string r1 = e.encrypt(input);
-	printf("%s\n", hexlify(r1).c_str());
-	printf("%s\n", b64enc(r1).c_str());
-	decryptor<aes128_ecb> d(pass);
-	r1 = d.decrypt(r1);
-	printf("%s\n", r1.c_str());
+	log("%s", hexlify(input).c_str());
+	testCrypt(input, pass);
 	return 0;
 }
+
 #endif

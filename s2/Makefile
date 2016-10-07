@@ -3,11 +3,13 @@ CXXFLAGS=--std=c++11 -Wall -Wextra -Werror -pedantic -pedantic-errors -Wshadow
 
 CXXFLAGS+=-I../common
 
-SRC := $(sort $(wildcard c?.cpp))
+CXXFLAGS+=-ggdb
+
+SRC := $(sort $(wildcard c*.cpp))
 OBJ := $(addsuffix .o,$(basename $(SRC)))
 EXE := $(SRC:c%.cpp=chal%)
 
-COMMON := ../common/utils.cpp
+COMMON := ../common/utils.cpp ../common/aes128_ecb.cpp
 COMMON_OBJ := $(addsuffix .o,$(basename $(COMMON)))
 
 chal9: LIBS = -lcrypto
