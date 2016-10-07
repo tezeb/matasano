@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 
 import binascii
-from languageScore import freqScore
-from cryptoUtils import strxor
-from cryptoUtils import bruteXor
+from py_common.languageScore import freqScore
+from py_common.cryptoUtils import strxor, bruteXor
 
 def main():
     ret = None

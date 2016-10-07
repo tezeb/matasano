@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import binascii
-from cryptoUtils import strxor
+from py_common.cryptoUtils import strxor
 
 if __name__ == '__main__':
     t1 = "1c0111001f010100061a024b53535009181c"

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import binascii
-from cryptoUtils import strxor
+from py_common.cryptoUtils import strxor
 
 if __name__ == '__main__':
     t1 = b"Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"

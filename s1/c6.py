@@ -2,10 +2,8 @@
 
 import binascii
 import base64
-from cryptoUtils import editDist
-from cryptoUtils import strxor
-from cryptoUtils import bruteXor
-from languageScore import freqScore
+from py_common.cryptoUtils import editDist, strxor, bruteXor
+from py_common.languageScore import freqScore
 
 def findKeysize(enc):
     minDist = 8*len(enc)
