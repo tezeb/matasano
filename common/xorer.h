@@ -41,6 +41,11 @@ public:
     m_buffer.clear();
     m_iter = m_key.begin();
   }
+  void reset(std::string key) {
+	  m_buffer.clear();
+	  m_key = key;
+	  m_iter = m_key.begin();
+  }
   xorer& setKey(std::string key) {
     m_key = key;
     m_iter = m_key.begin();

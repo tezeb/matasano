@@ -12,7 +12,7 @@ EXE := $(SRC:c%.cpp=chal%)
 COMMON := ../common/utils.cpp ../common/aes128_ecb.cpp
 COMMON_OBJ := $(addsuffix .o,$(basename $(COMMON)))
 
-chal9: LIBS = -lcrypto
+chal9 chal10: LIBS = -lcrypto
 
 .SECONDARY: $(addprefix chal,$(TARGETS))
 
@@ -23,7 +23,7 @@ run: $(EXE:chal%=run%)
 chal%: c%.o $(COMMON_OBJ)
 	$(CXX) $(LIBS) -o $@ $^
 
-run%: chal%
+run%: chal% c%.o
 	@echo -e "----- Running $^ -----"
 	@./$^
 

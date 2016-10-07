@@ -3,10 +3,6 @@
 #include <cstring>
 #include "aes128_ecb.h"
 
-#define log(...) {fprintf(stderr, "%20.20s:%03d\t", __func__, __LINE__); fprintf(stderr, __VA_ARGS__); putc('\n', stderr);}
-//	debug
-#include "utils.h"
-
 using namespace std;
 
 namespace {
@@ -85,7 +81,7 @@ string aes128_ecb::finalize() {
 	m_outlen += xlen;
 	m_buff[m_outlen] = '\0';
 
-	string ret = reinterpret_cast<const char*>(m_buff);
+	string ret(reinterpret_cast<const char*>(m_buff), m_outlen);
 
 	EVP_CIPHER_CTX_cleanup(&m_ctx);
 
@@ -104,7 +100,21 @@ void aes128_ecb::checkBuffer(size_t newlen) {
 	}
 }
 
+string aes128_ecb::encrypt(const string& in) {
+	init();
+	append(in);
+	return finalize();
+}
+
+string aes128_ecb::decrypt(const string& in) {
+	init(false);
+	append(in);
+	return finalize();
+}
+
 #ifdef AES_STANDALONE
+
+#include "utils.h"
 
 void testCrypt(string in, string& key) {
 	aes128_ecb x(key);

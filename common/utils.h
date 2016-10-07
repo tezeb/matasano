@@ -1,11 +1,16 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 
-#include <string>
-#include <unistd.h>
+#include <cstdio>
+
 #include <vector>
 #include <string>
 #include <utility>
+
+#include <unistd.h>
+
+#define dbg(...) {fprintf(stderr, "%20.20s:%03d\t", __func__, __LINE__); fprintf(stderr, __VA_ARGS__); putc('\n', stderr);}
+#define log(...) {fprintf(stderr, __VA_ARGS__); putc('\n', stdout);}
 
 std::string b64enc(const std::string& in);
 

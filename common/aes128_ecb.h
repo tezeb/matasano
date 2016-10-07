@@ -24,6 +24,8 @@ class aes128_ecb {
 	void init(bool encrypt=true);
 	void append(const std::string& in);
 	std::string finalize();
+	std::string encrypt(const std::string& in);
+	std::string decrypt(const std::string& in);
 };
 
 #endif // _AES128_ECB_H_
