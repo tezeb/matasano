@@ -4,16 +4,16 @@ def strxor(a, b):
     #   assert len(b) > 0
     #   assume a and b are bytes arrays
     c = (b*(len(a)//len(b)+1))[:len(a)]
-    return "".join([
-        chr(x ^ y) for(x, y) in zip(a, c)
+    return bytes([
+        x ^ y for(x, y) in zip(a, c)
         ])
 
 def bruteXor(res, predicate, *args):
     ret = None
-    max_v = 0
     dec = None
+    max_v = 0
     for x in range(0, 256):
-        t1 = strxor(res, str(chr(x)).encode('latin1'))
+        t1 = strxor(res, bytes([x]))
         value = predicate(t1, *args)
         if value > max_v:
             ret = t1

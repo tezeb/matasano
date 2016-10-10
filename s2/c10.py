@@ -12,9 +12,9 @@ def decryptAES_ECB(enc, key):
 def decryptAES_CBC(cryptxt, key, iv):
     plain = ""
     for i in range(16, len(cryptxt)+1, 16):
-        middle = decryptAES_ECB(t3[i-16:i], key)
-        plain += strxor(middle, iv)
-        iv = t3[i-16:i]
+        middle = decryptAES_ECB(cryptxt[i-16:i], key)
+        plain += strxor(middle, iv).decode('ascii')
+        iv = cryptxt[i-16:i]
     return plain
 
 if __name__ == "__main__":

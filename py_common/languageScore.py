@@ -38,6 +38,6 @@ freqs = {
 def freqScore(text, freqTable = freqs):
     s = 0
     for l in text:
-        if l in freqTable:
-            s += freqTable[l]
+        if chr(l) in freqTable:
+            s += freqTable[chr(l)]
     return s;

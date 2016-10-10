@@ -39,10 +39,10 @@ if __name__ == '__main__':
         for y in x:
             tmp.append(y)
         res.append(tmp)
-    password=""
+    password=bytearray()
     for s in res:
         (a, b, c) = bruteXor(s, freqScore)
-        password += chr(b)
-    print(password)
+        password.append(b)
+    print(password.decode('latin1'))
     print("Decrypted:")
-    print(strxor(t3, password.encode('latin1'))[0:256])
+    print(strxor(t3, password)[0:256].decode('latin1'))
