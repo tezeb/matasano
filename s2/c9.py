@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
-def pad(s, i):
-    c = i - len(s)%i
-    return s + chr(c) * c
+from py_common.cryptoUtils import pad
 
 def main():
-    s = "YELLOW SUBMARINE"
+    s = b"YELLOW SUBMARINE"
     for i in range(10, 25):
-        print(repr(pad(s, i)))
+        print(repr(pad(s, i).decode('latin-1')))
 
 if __name__ == "__main__":
     main()
