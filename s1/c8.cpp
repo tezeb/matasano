@@ -12,16 +12,8 @@ int main() {
   int max_cnt = 0;
   vector<string> res;
   while(!getline(file, tmp1).eof()) {
-    int cnt = 1;
     string tmp = unhexlify(tmp1);
-    for(size_t i = 0; i < tmp.length(); i+=16) {
-      for(size_t j = i+16; j < tmp.length(); j+=16) {
-        if(tmp.substr(i, 16) == tmp.substr(j, 16)) {
-          cnt++;
-          break;
-        }
-      }
-    }
+    int cnt = countRepetitions(tmp);
     if(cnt >= max_cnt) {
       if(cnt > max_cnt) {
         max_cnt = cnt;

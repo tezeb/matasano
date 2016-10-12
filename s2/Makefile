@@ -9,10 +9,10 @@ SRC := $(sort $(wildcard c*.cpp))
 OBJ := $(addsuffix .o,$(basename $(SRC)))
 EXE := $(SRC:c%.cpp=chal%)
 
-COMMON := ../common/utils.cpp ../common/aes128_ecb.cpp
+COMMON := ../common/utils.cpp ../common/aes128_ecb.cpp ../common/aes128_cbc.cpp
 COMMON_OBJ := $(addsuffix .o,$(basename $(COMMON)))
 
-chal9 chal10: LIBS = -lcrypto
+chal9 chal10 chal11: LIBS = -lcrypto
 
 .SECONDARY: $(addprefix chal,$(TARGETS))
 
@@ -31,4 +31,4 @@ p%: c%.py
 	@./$^
 
 clean:
-	rm -f $(EXE) $(OBJ) $(COMMON_OBJ)
+	rm -f $(EXE) *.o $(COMMON_OBJ)

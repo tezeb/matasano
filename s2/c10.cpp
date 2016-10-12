@@ -1,7 +1,6 @@
 #include <fstream>
-#include "aes128_ecb.h"
+#include "aes128_cbc.h"
 #include "utils.h"
-#include "xorer.h"
 
 using namespace std;
 
@@ -15,17 +14,10 @@ int main() {
 		data.append(tmp1);
 	}
 
-	aes128_ecb d(key);
+	aes128_cbc d(key);
 	string iv(16, '\0');
-	xorer mangle(iv);
 	data = b64dec(data);
-	string out;
-	for(size_t i = 16; i <= data.length(); i+=16) {
-		string cryptext = data.substr(i-16, 16);
-		string middleform = d.decrypt(cryptext);
-		out.append((mangle << middleform).get());
-		mangle.reset(cryptext);
-	}
+	string out = d.decrypt(data, iv);
 	log("Decrypted:\n%s\n", out.substr(0, 256).c_str());
 	return 0;
 }

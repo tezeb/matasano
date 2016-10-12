@@ -32,4 +32,4 @@ p%: c%.py
 	@./$^
 
 clean:
-	rm -f $(EXE) $(OBJ) $(COMMON_OBJ)
+	rm -f $(EXE) $(OBJ) *.o $(COMMON_OBJ)

@@ -1,14 +1,8 @@
 #include <cstdio>
 #include <string>
+#include "utils.h"
 
 using namespace std;
-
-string& pad(string& in, char block_size)
-{
-	char padding = block_size - in.length()%block_size;
-	in.append(padding, padding);
-	return in;
-}
 
 void show_hex(string& in) {
 	string out;
