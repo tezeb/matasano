@@ -40,8 +40,8 @@ def editDist(a, b):
             dist+=1
     return dist
 
-def pad(string, new_len):
-    c = new_len - len(string)%new_len
+def pad(string, blockLen=16):
+    c = blockLen - len(string)%blockLen
     return string + bytes([c] * c)
 
 def decryptAES_ECB(cryptxt, key):

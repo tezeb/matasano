@@ -4,13 +4,15 @@
 #include <string>
 #include <openssl/evp.h>
 
+#include "utils.h"
+
 class aes128_ecb {
 
 	EVP_CIPHER_CTX m_ctx;
 	size_t m_bufflen;
 	unsigned char *m_buff;
 	size_t m_outlen;
-	const std::string& m_key;
+	const std::string m_key;
 	bool m_encrypt;
 
 	void checkBuffer(size_t newlen);

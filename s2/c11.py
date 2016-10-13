@@ -1,12 +1,7 @@
 #!/usr/bin/python3
 
-from Crypto.Cipher import AES
 import py_common.cryptoUtils as cu
-import base64
-import random
 from random import SystemRandom as SRand
-from binascii import hexlify
-import sys
 
 def randomEncryption(plain):
     iv = cu.createRandomString(16)
@@ -16,7 +11,7 @@ def randomEncryption(plain):
     #   append with random
     plain += cu.createRandomString(SRand().randint(5, 10))
     #   pad
-    plain = cu.pad(plain, len(plain)+(16-len(plain)%16))
+    plain = cu.pad(plain, 16)
     if SRand().randint(0,1):
         return (cu.encryptAES_ECB(plain, key),"ECB")
     else:
