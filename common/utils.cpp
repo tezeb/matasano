@@ -2,6 +2,10 @@
 #include <map>
 #include <algorithm>
 #include <fstream>
+#include <cctype>
+#include <iomanip>
+#include <sstream>
+#include <string>
 
 using namespace std;
 
@@ -228,3 +232,50 @@ string createRandomString(size_t length) {
 	return ret;
 }
 
+string url_encode(const string &value) {
+    ostringstream escaped;
+    escaped.fill('0');
+    escaped << hex;
+
+    for (string::const_iterator i = value.begin(), n = value.end(); i != n; ++i) {
+        string::value_type c = (*i);
+
+        // Keep alphanumeric and other accepted characters intact
+        if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
+            escaped << c;
+            continue;
+        }
+
+        // Any other characters are percent-encoded
+        escaped << uppercase;
+        escaped << '%' << setw(2) << int((unsigned char) c);
+        escaped << nouppercase;
+    }
+
+    return escaped.str();
+}
+
+string url_decode(const string &value) {
+    ostringstream result;
+
+    string::const_iterator i = value.begin(), n = value.end();
+	while(i != n) {
+        string::value_type c = (*i++);
+
+        // Keep alphanumeric and other accepted characters intact
+        if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
+            result << c;
+        }
+		else if (c == '%') {
+			string nbr(1, *i++);
+			nbr.append(1, *i++);
+			result << static_cast<char>(stoi(nbr, nullptr, 16));
+		}
+		else {
+			//	choke yourself!
+			throw 13;
+		}
+    }
+
+    return result.str();
+}
