@@ -1,13 +1,11 @@
 #include <unistd.h>
-#include <cstdio>
-#include <fstream>
 #include <string>
-#include "utils.h"
-#include "aes128_ecb.h"
-#include "aes128_cbc.h"
 #include <sstream>
 #include <map>
 #include <stdexcept>
+#include "aes128_ecb.h"
+#include "aes128_cbc.h"
+#include "modeECB.h"
 
 using namespace std;
 
@@ -96,7 +94,7 @@ int main() {
 	log("[>] Cipher block len: %zu", blockLen);
 	//	check if ECB
 	test = string(3*blockLen, 'A');
-	if(!isECB(test)) {
+	if(!isECB(oracle.createProfile(test))) {
 		log("[-] Non ECB cipher");
 		return 1;
 	}

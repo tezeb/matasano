@@ -9,7 +9,8 @@ SRC := $(sort $(wildcard c*.cpp))
 OBJ := $(addsuffix .o,$(basename $(SRC)))
 EXE := $(SRC:c%.cpp=chal%)
 
-COMMON := ../common/utils.cpp ../common/aes128_ecb.cpp ../common/aes128_cbc.cpp
+COMMON := ../common/utils.cpp ../common/aes128_ecb.cpp ../common/aes128_cbc.cpp \
+		  ../common/modeECB.cpp
 COMMON_OBJ := $(addsuffix .o,$(basename $(COMMON)))
 
 chal%: LIBS = -lcrypto

@@ -1,20 +1,22 @@
 #include <unistd.h>
-#include <cstdio>
-#include <fstream>
 #include <string>
 #include "utils.h"
 #include "aes128_ecb.h"
 #include "aes128_cbc.h"
+#include "modeECB.h"
 
 using namespace std;
 
-class allMightyOracle {
+class allMightyOracle : public encOracle {
 	int m_prev;
 	int m_ecbGCorrect;
 	int m_cbcGCorrect;
 	int m_total;
 	public:
 	allMightyOracle() : m_prev(-1), m_ecbGCorrect(0), m_cbcGCorrect(0), m_total(0) {}
+	virtual string encrypt(const string& input) override {
+		return encryptRandomly(input);
+	}
 	string encryptRandomly(const string& input) {
 		//	prefix
 		string data = createRandomString(rand()%5 + 5);
@@ -50,17 +52,12 @@ class allMightyOracle {
 	}
 };
 
-bool isECB(const string& cryptxt) {
-	return (countRepetitions(cryptxt) > 1);
-}
-
 int main() {
 	srand(time(NULL));
 	allMightyOracle oracle;
 	string data(48, 'A');
 	for(int i = 0; i < 256; i++) {
-		string cryptxt = oracle.encryptRandomly(data);
-		if(isECB(cryptxt))
+		if(isECB(oracle, 16, 4))
 			oracle.guessECB();
 		else
 			oracle.guessCBC();

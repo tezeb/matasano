@@ -45,8 +45,6 @@ std::string readFile(std::string filename);
 
 std::string readBinFile(std::string filename);
 
-int countRepetitions(const std::string& tmp, int chunkLen=16);
-
 std::string& pad(std::string& in, char block_size);
 
 std::string createRandomString(size_t length);

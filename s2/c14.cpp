@@ -1,22 +1,29 @@
 #include <unistd.h>
 #include <string>
+#include "aes128_ecb.h"
 #include "encOracle.h"
 #include "modeECB.h"
-#include "aes128_ecb.h"
 
 using namespace std;
 
 class allMightyOracle : public encOracle {
 	string m_key;
 	aes128_ecb m_ecb;
+	size_t m_pSize;
 	static const string secret;
 	public:
-	allMightyOracle() : m_ecb(createRandomString(16)) {}
+	allMightyOracle(string key = createRandomString(16), size_t prefixSize=2048) :
+					m_ecb(key), m_pSize(prefixSize) {}
+	allMightyOracle(size_t prefixSize) : allMightyOracle(createRandomString(16), prefixSize) {}
 	virtual string encrypt(const string& input) override {
-		string data(input);
+		string data;
+		if(m_pSize)
+			data.append(createRandomString(rand()%m_pSize));
+		data.append(input);
 		data.append(b64dec(secret));
 		data = pad(data, 16);
-		return m_ecb.encrypt(data);
+		string x= m_ecb.encrypt(data);
+		return x;
 	}
 };
 
@@ -28,14 +35,12 @@ const string allMightyOracle::secret = "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWc"
 
 int main() {
 	srand(time(NULL));
-	allMightyOracle oracle;
-	string test;
-	string cryptxt = oracle.encrypt(test);
-	string c1;
-	//	discover block size for oracle
+	allMightyOracle oracle(16384);
+	string cryptxt = oracle.encrypt("");
+
 	size_t blockLen = discoverBlockLen(oracle);
 	log("[>] Cipher block len: %zu", blockLen);
-	//	check if ECB
+
 	if(!isECB(oracle, blockLen)) {
 		log("[-] Non ECB cipher");
 		return 1;

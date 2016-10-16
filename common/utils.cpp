@@ -204,19 +204,6 @@ string readBinFile(string filename) {
   return ret;
 }
 
-int countRepetitions(const string& tmp, int chunkLen) {
-	int cnt = 1;
-	for(size_t i = 0; i < tmp.length(); i+=chunkLen) {
-		for(size_t j = i+chunkLen; j < tmp.length(); j+=chunkLen) {
-			if(tmp.substr(i, chunkLen) == tmp.substr(j, chunkLen)) {
-				cnt++;
-				break;
-			}
-		}
-	}
-	return cnt;
-}
-
 string& pad(string& in, char block_size)
 {
 	char padding = block_size - in.length()%block_size;
