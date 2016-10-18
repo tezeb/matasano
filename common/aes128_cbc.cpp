@@ -31,14 +31,12 @@ std::string aes128_cbc::finalize() {
 }
 
 std::string aes128_cbc::encrypt(const string& in, const string& iv) {
-	string out;
 	init(iv, true);
 	append(in);
 	return finalize();
 }
 
 std::string aes128_cbc::decrypt(const string& in, const string& iv) {
-	string out;
 	init(iv, false);
 	append(in);
 	return finalize();

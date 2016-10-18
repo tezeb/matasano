@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 #include <exception>
+#include <map>
 
 #include <unistd.h>
 
@@ -61,5 +62,7 @@ std::string url_encode(const std::string &value);
 std::string url_decode(const std::string &value);
 
 std::string hexNonPrint(const std::string& in);
+
+std::map<std::string, std::string> splitUrlValues(const std::string& cookie);
 
 #endif // _UTILS_H_

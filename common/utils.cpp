@@ -250,13 +250,13 @@ string url_encode(const string &value) {
         // Keep alphanumeric and other accepted characters intact
         if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
             escaped << c;
-            continue;
         }
-
-        // Any other characters are percent-encoded
-        escaped << uppercase;
-        escaped << '%' << setw(2) << int((unsigned char) c);
-        escaped << nouppercase;
+		// Any other characters are percent-encoded
+		else {
+			escaped << uppercase;
+			escaped << '%' << setw(2) << int((unsigned char) c);
+			escaped << nouppercase;
+		}
     }
 
     return escaped.str();
@@ -269,18 +269,13 @@ string url_decode(const string &value) {
 	while(i != n) {
         string::value_type c = (*i++);
 
-        // Keep alphanumeric and other accepted characters intact
-        if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
-            result << c;
-        }
-		else if (c == '%') {
+		if (c == '%') {
 			string nbr(1, *i++);
 			nbr.append(1, *i++);
 			result << static_cast<char>(stoi(nbr, nullptr, 16));
 		}
 		else {
-			//	choke yourself!
-			throw 13;
+			result << c;
 		}
     }
 
@@ -297,4 +292,26 @@ string hexNonPrint(const string& in) {
 			out << "\\x" << setw(2) << +static_cast<unsigned char>(i);
 	}
 	return out.str();
+}
+
+map<string, string> splitUrlValues(const string& cookie) {
+	map<string, string> ret;
+	size_t pos = 0;
+	size_t prev_pos = 0;
+	while((pos = cookie.find_first_of(";=", prev_pos)) != string::npos) {
+		string key = cookie.substr(prev_pos, pos-prev_pos);
+		string value;
+		prev_pos = pos + 1;
+		if(cookie[pos] == '=') {
+			if ((pos = cookie.find_first_of(';', prev_pos)) == string::npos) {
+				pos = cookie.length();
+			}
+			value = cookie.substr(prev_pos, pos-prev_pos);
+			prev_pos = pos + 1;
+		}
+		ret.insert(pair<string, string>(key, value));
+	}
+	if(prev_pos < cookie.length())
+		ret.insert(pair<string, string>(cookie.substr(prev_pos, pos-prev_pos), string()));
+	return ret;
 }
