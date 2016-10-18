@@ -6,11 +6,16 @@
 #include <vector>
 #include <string>
 #include <utility>
+#include <exception>
 
 #include <unistd.h>
 
-#define dbg(...) {fprintf(stderr, "%20.20s:%03d\t", __func__, __LINE__); fprintf(stderr, __VA_ARGS__); putc('\n', stderr);}
-#define log(...) {fprintf(stderr, __VA_ARGS__); putc('\n', stdout);}
+#define dbg(...) do {fprintf(stderr, "%20.20s:%03d\t", __func__, __LINE__); fprintf(stderr, __VA_ARGS__); putc('\n', stderr);} while(0)
+#define log(...) do {fprintf(stderr, __VA_ARGS__); putc('\n', stdout);} while(0)
+
+struct InvalidPadding : std::exception {
+	virtual const char* what() const noexcept override;
+};
 
 std::string b64enc(const std::string& in);
 
@@ -47,10 +52,14 @@ std::string readBinFile(std::string filename);
 
 std::string& pad(std::string& in, char block_size);
 
+std::string& unpad(std::string& in);
+
 std::string createRandomString(size_t length);
 
 std::string url_encode(const std::string &value);
 
 std::string url_decode(const std::string &value);
+
+std::string hexNonPrint(const std::string& in);
 
 #endif // _UTILS_H_

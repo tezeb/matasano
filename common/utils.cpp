@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <iomanip>
 
 using namespace std;
 
@@ -18,6 +19,10 @@ namespace {
     's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2',
     '3', '4', '5', '6', '7', '8', '9', '+', '/'};
 
+}
+
+const char* InvalidPadding::what() const noexcept {
+	return "Invalid Padding!";
 }
 
 string b64enc(const string& in) {
@@ -211,6 +216,21 @@ string& pad(string& in, char block_size)
 	return in;
 }
 
+std::string& unpad(std::string& in)
+{
+	int val = in[in.length()-1];
+	size_t i = in.length()-val;
+	if(i > in.length())
+		throw InvalidPadding();
+	while(i < in.length()) {
+		if(in[i] != val)
+			throw InvalidPadding();
+		i++;
+	}
+	in.erase(in.length()-val);
+	return in;
+}
+
 string createRandomString(size_t length) {
 	string ret;
 	while(length--) {
@@ -265,4 +285,16 @@ string url_decode(const string &value) {
     }
 
     return result.str();
+}
+
+string hexNonPrint(const string& in) {
+	ostringstream out;
+	out << hex << setfill('0');
+	for(const char& i: in) {
+		if(isprint(i))
+			out << i;
+		else
+			out << "\\x" << setw(2) << +static_cast<unsigned char>(i);
+	}
+	return out.str();
 }
