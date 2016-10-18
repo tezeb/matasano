@@ -4,6 +4,7 @@ from Crypto.Cipher import AES
 import string
 import random
 from .utils import findMaxRepetitionsCnt
+import sys
 
 def strxor(a, b):
     #   assert len(b) > 0
@@ -70,8 +71,13 @@ def encryptAES_CBC(plain, key, iv):
         iv = cryptxt[i-16:i]
     return cryptxt
 
-def createRandomString(length, alphabet=string.printable):
-    return ''.join(random.SystemRandom().choice(alphabet) for _ in range(length)).encode('ascii')
+def createRandomString(length, alphabet=string.printable.encode('ascii')):
+    r = random.Random()
+    r.seed(random.SystemRandom().randint(0, sys.maxsize))
+    b = bytearray(length)
+    for i in range(length):
+        b[i] = r.choice(alphabet) 
+    return b
 
 def isECB(cryptxt, blockLen=16, retChunk=False):
     (count, chunk) = findMaxRepetitionsCnt(

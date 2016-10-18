@@ -4,26 +4,26 @@ import py_common.cryptoUtils as cu
 import base64
 import string
 import sys
-from random import SystemRandom as SRand
+import random
 from py_common.utils import findMaxRepetitionsCnt
 from binascii import hexlify, unhexlify
 
 class service:
-    def __init__(self, key=cu.createRandomString(16), prefixLen=2048):
+    def __init__(self, key=bytes(cu.createRandomString(16)), prefixLen=2048):
         self.key = key
         self.secret = "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"
         self.prefixLen = prefixLen
 
     def encrypt(self, plain):
-        data = cu.createRandomString(SRand().randint(0, self.prefixLen))
+        data = cu.createRandomString(random.randint(0, self.prefixLen))
         data += plain
         data += base64.b64decode(self.secret)
         data = cu.pad(data, 16)
 #        print("E:",len(data), hexlify(data))
-        return cu.encryptAES_ECB(data, self.key)
+        return cu.encryptAES_ECB(bytes(data), self.key)
 
 def main():
-    o = service(prefixLen=256)
+    o = service(prefixLen=2048)
     test = bytearray()
     blockLen = cu.discoverBlockLen(o)
     #   markers for finding our cryptxt after encryption
