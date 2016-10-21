@@ -77,7 +77,7 @@ def createRandomString(length, alphabet=string.printable.encode('ascii')):
     b = bytearray(length)
     for i in range(length):
         b[i] = r.choice(alphabet) 
-    return b
+    return bytes(b)
 
 def isECB(cryptxt, blockLen=16, retChunk=False):
     (count, chunk) = findMaxRepetitionsCnt(
