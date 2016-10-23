@@ -45,6 +45,14 @@ def pad(string, blockLen=16):
     c = blockLen - len(string)%blockLen
     return string + bytes([c] * c)
 
+def unpadVerified(text):
+    if text[-1] <= 0:
+        raise ValueError("Wrong padding!")
+    for i in range(1, text[-1]+1):
+        if text[-i] != text[-1]:
+            raise ValueError("Wrong padding!")
+    return text[:-text[-1]]
+
 def decryptAES_ECB(cryptxt, key):
     mode = AES.MODE_ECB
     aes = AES.new(key, mode)
@@ -184,3 +192,41 @@ def discoverBlockLen(oracle, probes=32, minBlockLen=16, interactive=True):
         if blockLen == minBlockLen or (verbose and input("Try harder? [y/N]") != "y"):
             break
     return blockLen
+
+def CBC_BreakByte(oracle, cryptxt, index):
+    for k in range(0, 256):
+        cryptxt[index] = k
+        try:
+            oracle.consumeSecret(bytes(cryptxt))
+            return k
+        except ValueError as error:
+            pass
+    return -1
+
+def CBC_BreakBlock(oracle, iv, cryptxt, blockLen=16):
+    pad = 1
+    middle = bytearray(blockLen)
+    part = bytearray(b"A" * blockLen)
+    part += cryptxt
+    for j in range(blockLen-1, -1, -1):
+        k = CBC_BreakByte(oracle, part, j)
+        if k >= 0:
+            middle[j] = k ^ pad
+            found = True
+            pad += 1
+            for l in range(j, blockLen):
+                part[l] = middle[l] ^ pad
+        else:
+            print("[-] Error!")
+            print("[-] So far:",repr(strxor(iv, middle)))
+            sys.exit(1)
+    return strxor(iv, middle)
+
+def CBC_OraclePadding(oracle, cryptxt, blockLen=16):
+    decoded = b""
+    for i in range(2*blockLen, len(cryptxt)+1, blockLen):
+        part = cryptxt[i-blockLen:i]
+        iv = cryptxt[i-(2*blockLen):i-blockLen]
+        decoded += CBC_BreakBlock(oracle, iv, part, blockLen)
+    return unpadVerified(decoded).decode('ascii')
+
