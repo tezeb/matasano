@@ -220,7 +220,7 @@ std::string& unpad(std::string& in)
 {
 	int val = in[in.length()-1];
 	size_t i = in.length()-val;
-	if(i > in.length())
+	if(i > in.length() || val < 1)
 		throw InvalidPadding();
 	while(i < in.length()) {
 		if(in[i] != val)

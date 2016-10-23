@@ -2,3 +2,4 @@ chal*
 __pycache__
 .*.sw?
 *.o
+*.pyc
