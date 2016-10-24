@@ -10,6 +10,7 @@ OBJ := $(addsuffix .o,$(basename $(SRC)))
 EXE := $(SRC:c%.cpp=chal%)
 
 COMMON := ../common/utils.cpp ../common/aes128_ecb.cpp ../common/aes128_cbc.cpp \
+		  ../common/aes128_ctr.cpp \
 		  ../common/modeECB.cpp ../common/modeCBC.cpp
 COMMON_OBJ := $(addsuffix .o,$(basename $(COMMON)))
 

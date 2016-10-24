@@ -5,13 +5,14 @@ import string
 import random
 from .utils import findMaxRepetitionsCnt
 import sys
+from itertools import cycle
+import struct
 
-def strxor(a, b):
+def strxor(data, key):
     #   assert len(b) > 0
-    #   assume a and b are bytes arrays
-    c = (b*(len(a)//len(b)+1))[:len(a)]
+    #   assume a and b are bytes/bytearrays
     return bytes([
-        x ^ y for(x, y) in zip(a, c)
+        x ^ y for(x, y) in zip(data, cycle(key))
         ])
 
 def bruteXor(res, predicate, *args):
@@ -78,6 +79,16 @@ def encryptAES_CBC(plain, key, iv):
         cryptxt += encryptAES_ECB(middle, key)
         iv = cryptxt[i-16:i]
     return cryptxt
+
+def doAES_CTR(data, key, nonce=0, bcnt=0):
+    i = 0
+    ret = b""
+    while i < len(data):
+        ctrKey = encryptAES_ECB(struct.pack("<Q", nonce) + struct.pack("<Q", bcnt), key)
+        ret += strxor(data[i:i+16], ctrKey)
+        i += 16
+        bcnt += 1
+    return ret
 
 def createRandomString(length, alphabet=string.printable.encode('ascii')):
     r = random.Random()
